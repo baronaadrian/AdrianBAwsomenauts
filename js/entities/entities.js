@@ -135,7 +135,7 @@ game.PlayerEntity = me.Entity.extend({
     
     collideHandler: function(response){
         if (response.b.type === 'EnemyBaseEntity') {
-           this.collideWithEnemyBase();
+           this.collideWithEnemyBase(response);
         } else if (response.b.type === 'EnemyCreep') {
            this.collideWithEnemyCreep(response);
         }
@@ -155,10 +155,11 @@ game.PlayerEntity = me.Entity.extend({
             }else if(xdif<70 && this.facing==='left' && xdif>0){
                     this.body.vel.x = 0;
             }
-            if (this.renderable.isCurrentAnimation("attack") && this.now-this.lastHit >= game.data.playerAttackTimer)
+            if (this.renderable.isCurrentAnimation("attack") && this.now-this.lastHit >= game.data.playerAttackTimer){
                 this.lastHit = this.now;
                 response.b.loseHealth(game.data.playerAttack);
-            },
+            }
+    },
    
     collideWithEnemyCreep: function(response){
          var xdif = this.pos.x - response.b.pos.x;
