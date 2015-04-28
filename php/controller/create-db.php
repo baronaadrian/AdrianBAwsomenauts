@@ -15,9 +15,3 @@ $query = $_SESSION["connection"]->query("CREATE TABLE users ("
          . "exp3 int (4),"
          . "exp4 int (4),"
          . "PRIMARY KEY (id))");
-
-if ($query) {
-    echo "<p>successfully created table</p>";
-} else {
-    echo "<p>" . $SESSION["connection"]->error . "</p>";
-}
