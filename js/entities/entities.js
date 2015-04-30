@@ -16,6 +16,7 @@ game.PlayerEntity = me.Entity.extend({
     setSuper: function(x, y) {
         this._super(me.Entity, 'init', [x, y, {
                 image: "player",
+                //this is the picture for the player
                 width: 64,
                 height: 64,
                 spritewidth: "64",
@@ -29,35 +30,48 @@ game.PlayerEntity = me.Entity.extend({
     setPlayerTimers: function() {
         this.now = new Date().getTime();
         this.lastHit = this.now;
+        //this is for the last hit
+        this.lastSpear = this.now;
+        //this is for the spear
         this.lastAttack = new Date().getTime();  //haven't used this
     },
     
     setAttributes: function() {
         this.health = game.data.playerHealth;
+        //this is the players health
         this.body.setVelocity(game.data.playerMoveSpeed, 20);
+        //this is the players speed
         this.attack = game.data.playerAttack;
+        //this is for the players attack
     },
     
     setFlags: function() {
         //keeps track of which direction your character is going
         this.facing = "right";
         this.dead = false;
+        //this is for the players death
         this.attacking = false;
+        
     },
     
     addAnimation: function() {
         this.renderable.addAnimation("idle", [78]);
         this.renderable.addAnimation("walk", [117, 118, 119, 120, 121, 122, 123, 124, 125], 80);
         this.renderable.addAnimation("attack", [65, 66, 67, 68, 69, 70, 71, 72], 80);
+        //these are for the animation for the player
 
     },
     
     update: function(delta) {
         this.now = new Date().getTime();
         this.dead = this.checkIfDead();
+        //this is for the player to respawn again 
         this.checkKeyPressesAndMove();
+        //this makes sure that the keys work
+        this.checkAbilityKeys();  
         this.setAnimation();
         me.collision.check(this, true, this.collideHandler.bind(this), true);
+        //this makes the player and the creep collide
         this.body.update(delta);
         this._super(me.Entity, "update", [delta]);
         return true;
@@ -73,8 +87,10 @@ game.PlayerEntity = me.Entity.extend({
     checkKeyPressesAndMove: function() {
         if (me.input.isKeyPressed("right")) {
             this.moveRight();
+            //moves player to the right
         } else if (me.input.isKeyPressed("left")) {
             this.moveLeft();
+            //moves the player to the left
         } else {
             this.body.vel.x = 0;
         }
@@ -82,10 +98,12 @@ game.PlayerEntity = me.Entity.extend({
         if (me.input.isKeyPressed("up")) {
             if (!this.body.jumping && !this.body.falling) {
                 this.jump();
+            //makes the player jump
             }
         }
         
-      this.attacking = me.input.isKeyPressed("attack");    
+      this.attacking = me.input.isKeyPressed("attack");
+      //makes the player attack
     },
     
     moveRight: function() {
@@ -101,11 +119,32 @@ game.PlayerEntity = me.Entity.extend({
         this.facing = "left";
         this.body.vel.x -= this.body.accel.x * me.timer.tick;
         this.flipX(false);
+        //makes the player move left
     },
     
     jump: function() {
         this.body.jumping = true;
         this.body.vel.y -= this.body.accel.y * me.timer.tick;
+        //makes player jump
+    },
+       
+    checkAbilityKeys: function() {
+        if(me.input.isKeyPressed("skill1")){
+           //this.speedBurst();
+        }else if(me.input.isKeyPressed("skill2")){
+           //this.eatCreep(); 
+        }
+        else if(me.input.isKeyPressed("skill3")){
+         this.throwSpear();   
+        }
+    },
+       
+    throwSpear: function(){
+           if(this.lastSpear >= game.data.spearTimer && game.data.ability3 >=0){
+            this.lastSpear = this.now;
+            var spear = me.pool.pull("spear", this.pos.x, this.pos.y, {});
+            me.game.world.addChild(spear, 10); 
+        }
     },
        
     setAnimation: function(){

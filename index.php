@@ -1,4 +1,3 @@
-<!DOCTYPE HTML>
 <?php
 require_once("php/controller/create-db.php");
 ?>
